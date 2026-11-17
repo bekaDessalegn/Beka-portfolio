@@ -81,8 +81,21 @@ universe.addEventListener('pointerleave',()=>{
 const {projects, chapters, contracts, engagements} = window.PORTFOLIO;
 const asset = name => `./assets/${name}`;
 const tagMarkup = tags => tags.map(tag=>`<span class="glass-tag">${tag}</span>`).join('');
+function shotImage(shot) {
+  return `<img src="${asset(shot.src)}" alt="${shot.alt}" loading="lazy" decoding="async" width="${shot.width || 1170}" height="${shot.height || 2532}">`;
+}
+function phoneFrame(project, shot) {
+  const landscape = project.frame === 'phone-landscape' ? ' phone-landscape' : '';
+  return `<div class="phone-frame${landscape}">${shotImage(shot)}</div>`;
+}
 function visualMarkup(project, context='') {
-  if(project.images) return `<div class="capture-frame"><span class="capture-chrome"><i></i><i></i><i></i><b>${project.visualTitle||project.name}</b></span><img src="${asset(project.images[0].src)}" alt="${project.images[0].alt}" loading="lazy" decoding="async" width="1440" height="1000"><span class="capture-glint" aria-hidden="true"></span></div><span class="capture-note">${project.images[0].caption}</span>`;
+  if (project.images) {
+    const shot = project.images[0];
+    const frame = project.frame === 'phone' || project.frame === 'phone-landscape'
+      ? phoneFrame(project, shot)
+      : `<div class="capture-frame"><span class="capture-chrome"><i></i><i></i><i></i><b>${project.visualTitle || project.name}</b></span>${shotImage(shot)}<span class="capture-glint" aria-hidden="true"></span></div>`;
+    return `${frame}<span class="capture-note">${shot.caption}</span>`;
+  }
   return `<div class="engineering-record"><span class="record-label">PROJECT CONTRIBUTION</span><h4>${project.record[0]}</h4><div class="record-flow">${project.record.slice(1).map((step,i)=>`<div><b>0${i+1}</b><span>${step}</span><i aria-hidden="true">↗</i></div>`).join('')}</div><span class="record-note">${project.category}</span></div>`;
 }
 $('.project-track').innerHTML=projects.map(p=>`<article class="project-card" data-world="${p.world}" aria-label="${p.name}"><button class="project-art world-art" data-open="${p.id}" aria-label="Explore ${p.name}"><span class="project-overline">${p.category}</span><span class="world-orb" aria-hidden="true"></span><div class="project-capture">${visualMarkup(p)}</div><span class="world-enter">ENTER THE PROJECT <b>↗</b></span></button><div class="project-meta"><div><h3>${p.name}</h3><p>${p.description}</p><p class="project-role"><strong>My contribution</strong> ${p.contribution}</p><div class="project-tags">${tagMarkup(p.tags.slice(0,4))}</div></div><button type="button" data-open="${p.id}" aria-label="Explore ${p.name}" class="project-open">↗</button></div></article>`).join('');
@@ -160,7 +173,9 @@ let openedProject, galleryIndex=0,returnFocus;
 function showGallery(index){
   galleryIndex=(index+openedProject.images.length)%openedProject.images.length;
   const shot=openedProject.images[galleryIndex];
-  $('.dialog-image-wrap').innerHTML=`<img src="${asset(shot.src)}" alt="${shot.alt}" width="1440" height="1000">`;
+  $('.dialog-image-wrap').innerHTML = (openedProject.frame === 'phone' || openedProject.frame === 'phone-landscape')
+    ? phoneFrame(openedProject, shot)
+    : `<img src="${asset(shot.src)}" alt="${shot.alt}" width="1440" height="1000">`;
   $('#gallery-caption').textContent=`${galleryIndex+1} / ${openedProject.images.length} · ${shot.caption}`;
 }
 function openProject(id){

@@ -10,8 +10,8 @@ const fs=require('node:fs');
   const page=await browser.newPage({viewport:{width,height:900},reducedMotion:'reduce'});const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(url,{waitUntil:'networkidle'});
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`overflow ${width}`);
   await page.locator('.project-directory summary').evaluate(e=>e.click());
-  await page.waitForFunction(()=>document.querySelectorAll('.project-directory article').length===6);
-  assert.equal(await page.locator('.project-directory article').count(),6);
+  await page.waitForFunction(()=>document.querySelectorAll('.project-directory article').length===7);
+  assert.equal(await page.locator('.project-directory article').count(),7);
   await page.locator('.project-directory summary').evaluate(e=>e.click());
   await page.locator('#motion-toggle').evaluate(e=>e.click());
   assert(await page.locator('body').evaluate(e=>e.classList.contains('motion-off')),'system motion must remain authoritative');
@@ -43,11 +43,11 @@ const fs=require('node:fs');
   if([390,1440].includes(width))for(const [name,selector]of [['work','#work'],['journey','#journey'],['about','#about'],['toolbox','#toolbox'],['contact','#contact']]){
    await page.locator(selector).evaluate(async e=>{e.scrollIntoView({block:'start',behavior:'instant'});for(const img of e.querySelectorAll('img')){img.loading='eager';await img.decode().catch(()=>{})}});await page.screenshot({path:`/tmp/portfolio-review/${name}-${width}.png`});
   }
-  assert.deepEqual(errors,[]);results.push({width,overflow:false,systemMotion:true,manualMotion:true,projects:6,dialogFocus:true,errors});await page.close();
+  assert.deepEqual(errors,[]);results.push({width,overflow:false,systemMotion:true,manualMotion:true,projects:7,dialogFocus:true,errors});await page.close();
  }
  // Complete project descriptions and real source links remain reachable without any script.
- const nojs=await browser.newPage({javaScriptEnabled:false,viewport:{width:390,height:844}});await nojs.goto(url);await nojs.locator('.project-directory summary').click();assert.equal(await nojs.locator('.project-directory article').count(),6);assert(await nojs.locator('.project-directory article a').first().isVisible());assert(await nojs.locator('a[href="mailto:bekadessalegn@gmail.com"]').first().count());assert(await nojs.locator('.journey-accessible').isVisible());assert(await nojs.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await nojs.screenshot({path:'/tmp/portfolio-review/no-script.png'});await nojs.close();
+ const nojs=await browser.newPage({javaScriptEnabled:false,viewport:{width:390,height:844}});await nojs.goto(url);await nojs.locator('.project-directory summary').click();assert.equal(await nojs.locator('.project-directory article').count(),7);assert(await nojs.locator('.project-directory article a').first().isVisible());assert(await nojs.locator('a[href="mailto:bekadessalegn@gmail.com"]').first().count());assert(await nojs.locator('.journey-accessible').isVisible());assert(await nojs.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await nojs.screenshot({path:'/tmp/portfolio-review/no-script.png'});await nojs.close();
  const failure=await browser.newPage({reducedMotion:'reduce'});await failure.route('**/assets/angels-home.webp',route=>route.abort());await failure.goto(url);await failure.locator('[data-open="angels"]').first().evaluate(e=>e.click());await failure.locator('.asset-fallback').waitFor();assert(await failure.locator('#dialog-contribution').textContent());assert(await failure.locator('#dialog-source').getAttribute('href'));await failure.close();
- const blocked=await browser.newPage();await blocked.addInitScript(()=>{Object.defineProperty(window,'localStorage',{get(){throw Error('Storage unavailable')}})});const errors=[];blocked.on('pageerror',e=>errors.push(e.message));await blocked.goto(url);assert.equal(await blocked.locator('.project-card').count(),6);assert.deepEqual(errors,[]);await blocked.close();
+ const blocked=await browser.newPage();await blocked.addInitScript(()=>{Object.defineProperty(window,'localStorage',{get(){throw Error('Storage unavailable')}})});const errors=[];blocked.on('pageerror',e=>errors.push(e.message));await blocked.goto(url);assert.equal(await blocked.locator('.project-card').count(),7);assert.deepEqual(errors,[]);await blocked.close();
  await browser.close();fs.writeFileSync('/tmp/portfolio-review/verification.json',JSON.stringify({results,noScript:true,imageFailure:true,storageUnavailable:true},null,2));console.log(process.argv.includes('--resilience-only') ? 'PASS resilience verification: no-script content and wrapping, image failure, denied storage' : 'PASS refinement verification: 7 widths, 14 theme layouts, 203 dialog/focus cycles, reduced motion, rotation, no-script content, image failure and denied storage');
 })().catch(e=>{console.error(e);process.exit(1)});

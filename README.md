@@ -20,7 +20,7 @@ NODE_PATH=/path/to/node_modules node tests/browser.cjs
 
 Optional environment variables: `PORTFOLIO_URL` (default: local preview above) and `CHROME_PATH` (default: `/usr/bin/google-chrome`). Screenshots are written to `/tmp/portfolio-*.png`.
 
-Checks cover five viewport sizes, horizontal overflow, all 6 project viewers, carousel wrapping, toolbox filters, theme persistence, reduced motion, compact timeline selection, project deep links, local links and assets, and browser errors. This is Chromium coverage; Safari, Firefox, real-device gestures, and external-site availability require separate verification.
+Checks cover five viewport sizes, horizontal overflow, all 7 project viewers, carousel wrapping, toolbox filters, theme persistence, reduced motion, compact timeline selection, project deep links, local links and assets, and browser errors. This is Chromium coverage; Safari, Firefox, real-device gestures, and external-site availability require separate verification.
 
 ## Responsive experience
 
