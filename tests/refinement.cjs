@@ -22,11 +22,10 @@ const fs=require('node:fs');
   assert.equal(await page.evaluate(()=>localStorage.getItem('kt-motion')),'off');
   await page.emulateMedia({reducedMotion:'reduce'});await page.emulateMedia({reducedMotion:'no-preference'});
   assert(await page.locator('body').evaluate(e=>e.classList.contains('motion-off')),'manual off survives preference changes');
-  for(const theme of ['dark','light']){
-   await page.evaluate(t=>document.documentElement.dataset.theme=t,theme);
-   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
-   if([390,1440].includes(width)){await page.screenshot({path:`/tmp/portfolio-review/hero-${width}-${theme}.png`});}
-  }
+  assert.equal(await page.locator('html').getAttribute('data-theme'),'dark');
+  assert.equal(await page.locator('#theme-toggle').count(),0);
+  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+  if([390,1440].includes(width)){await page.screenshot({path:`/tmp/portfolio-review/hero-${width}-dark.png`});}
   await page.evaluate(()=>{document.documentElement.dataset.theme='dark';document.querySelector('#work').scrollIntoView({behavior:'instant'})});
   await page.waitForFunction(()=>document.querySelector('.nav a[href="#work"]').getAttribute('aria-current')==='location');
   assert.equal(await page.locator('.nav a[href="#work"]').getAttribute('aria-current'),'location');
@@ -49,5 +48,5 @@ const fs=require('node:fs');
  const nojs=await browser.newPage({javaScriptEnabled:false,viewport:{width:390,height:844}});await nojs.goto(url);await nojs.locator('.project-directory summary').click();assert.equal(await nojs.locator('.project-directory article').count(),7);assert(await nojs.locator('.project-directory article a').first().isVisible());assert(await nojs.locator('a[href="mailto:bekadessalegn@gmail.com"]').first().count());assert(await nojs.locator('.journey-accessible').isVisible());assert(await nojs.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await nojs.screenshot({path:'/tmp/portfolio-review/no-script.png'});await nojs.close();
  const failure=await browser.newPage({reducedMotion:'reduce'});await failure.route('**/assets/angels-home.webp',route=>route.abort());await failure.goto(url);await failure.locator('[data-open="angels"]').first().evaluate(e=>e.click());await failure.locator('.asset-fallback').waitFor();assert(await failure.locator('#dialog-contribution').textContent());assert(await failure.locator('#dialog-source').getAttribute('href'));await failure.close();
  const blocked=await browser.newPage();await blocked.addInitScript(()=>{Object.defineProperty(window,'localStorage',{get(){throw Error('Storage unavailable')}})});const errors=[];blocked.on('pageerror',e=>errors.push(e.message));await blocked.goto(url);assert.equal(await blocked.locator('.project-card').count(),7);assert.deepEqual(errors,[]);await blocked.close();
- await browser.close();fs.writeFileSync('/tmp/portfolio-review/verification.json',JSON.stringify({results,noScript:true,imageFailure:true,storageUnavailable:true},null,2));console.log(process.argv.includes('--resilience-only') ? 'PASS resilience verification: no-script content and wrapping, image failure, denied storage' : 'PASS refinement verification: 7 widths, 14 theme layouts, 203 dialog/focus cycles, reduced motion, rotation, no-script content, image failure and denied storage');
+ await browser.close();fs.writeFileSync('/tmp/portfolio-review/verification.json',JSON.stringify({results,noScript:true,imageFailure:true,storageUnavailable:true},null,2));console.log(process.argv.includes('--resilience-only') ? 'PASS resilience verification: no-script content and wrapping, image failure, denied storage' : 'PASS refinement verification: 7 widths, dark theme only, 203 dialog/focus cycles, reduced motion, rotation, no-script content, image failure and denied storage');
 })().catch(e=>{console.error(e);process.exit(1)});
