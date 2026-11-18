@@ -20,7 +20,7 @@ html[data-theme=dark] #about .photo-note{background:linear-gradient(135deg,#6c9e
 #about .portrait-preview{position:relative;display:block;width:100%;padding:0;border:0;background:none;border-radius:20px;isolation:isolate;cursor:zoom-in;transition:transform .85s var(--ease)}
 #about .about-photo:hover .portrait-cutout{transform:none}
 #about .portrait-preview:hover{transform:translateY(-7px)}
-#about .identity-card{position:relative;z-index:1;display:flex;flex-direction:column;justify-content:flex-end;gap:8px;min-height:520px;padding:36px 32px 32px;border-radius:28px;color:#f4fbfa;background:radial-gradient(ellipse at 28% 18%,#8fd0c866,transparent 52%),linear-gradient(165deg,#16383f 0%,#0c1c22 68%);box-shadow:0 25px 40px #17273033}
+#about .about-photo img.about-portrait{position:relative;z-index:1;width:100%;height:auto;aspect-ratio:1448/1086;object-fit:cover;object-position:center;border-radius:28px;filter:none;box-shadow:0 28px 40px #0007}
 #about .identity-kicker{font-size:11px;letter-spacing:.16em;opacity:.72}
 #about .identity-mark{font-size:clamp(88px,10vw,132px);line-height:.82;letter-spacing:-.07em;font-weight:500}
 #about .identity-role{font-size:18px;letter-spacing:-.03em;max-width:12em}
